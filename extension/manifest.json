@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "PhishGuard",
+  "version": "1.0.0",
+  "description": "Warns you before you open a phishing link. Uses your local PhishGuard API.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["http://127.0.0.1:8003/*"],
+  "background": {"service_worker": "background.js"},
+  "content_scripts": [{"matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle"}],
+  "action": {"default_title": "PhishGuard"}
+}

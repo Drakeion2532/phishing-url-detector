@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PhishGuard URL Checker</title><style>
+body{font-family:system-ui,sans-serif;background:#0b1220;color:#e5e7eb;margin:0;display:flex;justify-content:center}
+.wrap{max-width:720px;width:100%;padding:48px 16px}h1{margin:0 0 6px}p.s{color:#9ca3af;margin-top:0}
+form{display:flex;gap:8px;margin:24px 0}input{flex:1;padding:14px;border-radius:10px;border:1px solid #374151;background:#111827;color:#fff;font-size:16px}
+button{padding:14px 20px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+.card{background:#111827;border-radius:14px;padding:20px;border-left:8px solid #6b7280}.safe{border-color:#22c55e}.suspicious{border-color:#f59e0b}.phishing{border-color:#ef4444}
+.v{font-size:28px;font-weight:800;text-transform:uppercase}.meter{height:10px;background:#1f2937;border-radius:6px;margin:12px 0}.meter div{height:100%;border-radius:6px}
+li{margin:6px 0;color:#d1d5db}.ex{color:#93c5fd;cursor:pointer;text-decoration:underline;margin-right:10px;font-size:14px}
+</style></head><body><div class="wrap"><h1>🛡️ PhishGuard</h1><p class="s">Paste a link from an SMS, WhatsApp or email. We analyse the URL text only and never open the site.</p>
+<form id="f"><input id="u" placeholder="e.g. sbi-kyc-update.xyz/login" autocomplete="off"><button>Check</button></form>
+<div><span class="ex">paypal.com.account-verify.tk/signin</span><span class="ex">github.com/explore</span><span class="ex">bit.ly/3xYz12</span></div><br>
+<div id="out"></div></div><script>
+const out=document.getElementById('out');
+async function run(url){const r=await fetch('/check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url})});const d=await r.json();
+ const col={safe:'#22c55e',suspicious:'#f59e0b',phishing:'#ef4444'}[d.verdict];
+ out.innerHTML=`<div class="card ${d.verdict}"><div class="v" style="color:${col}">${d.verdict}</div><div>risk score ${(d.score*100).toFixed(1)}%</div>
+ <div class="meter"><div style="width:${d.score*100}%;background:${col}"></div></div><ul>${(d.reasons||[]).map(x=>'<li>'+x.replace(/</g,'&lt;')+'</li>').join('')||'<li>No specific red flags in the URL text</li>'}</ul></div>`;}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();run(document.getElementById('u').value)};
+document.querySelectorAll('.ex').forEach(x=>x.onclick=()=>{document.getElementById('u').value=x.textContent;run(x.textContent)});
+</script></body></html>

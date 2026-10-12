@@ -1,0 +1,105 @@
+{
+  "dataset": [
+    {
+      "source": "faizan_bad",
+      "label": 1,
+      "n": 29961
+    },
+    {
+      "source": "faizan_good",
+      "label": 0,
+      "n": 60000
+    },
+    {
+      "source": "phishing_database",
+      "label": 1,
+      "n": 29971
+    }
+  ],
+  "holdout_20pct": {
+    "XGBoost_lexical": {
+      "accuracy": 0.9354,
+      "precision": 0.9451,
+      "recall": 0.9245,
+      "f1": 0.9347,
+      "roc_auc": 0.9828,
+      "false_positive_rate": 0.0537
+    },
+    "LogReg_char_ngrams": {
+      "accuracy": 0.9729,
+      "precision": 0.9801,
+      "recall": 0.9653,
+      "f1": 0.9726,
+      "roc_auc": 0.9958,
+      "false_positive_rate": 0.0196
+    },
+    "Ensemble": {
+      "accuracy": 0.9737,
+      "precision": 0.9809,
+      "recall": 0.9663,
+      "f1": 0.9735,
+      "roc_auc": 0.9958,
+      "false_positive_rate": 0.0188
+    }
+  },
+  "cross_source_unseen_phishing_feed": {
+    "XGBoost_lexical": {
+      "accuracy": 0.903,
+      "precision": 0.9464,
+      "recall": 0.8339,
+      "f1": 0.8866,
+      "roc_auc": 0.9655,
+      "false_positive_rate": 0.0393
+    },
+    "LogReg_char_ngrams": {
+      "accuracy": 0.9113,
+      "precision": 0.9816,
+      "recall": 0.8202,
+      "f1": 0.8937,
+      "roc_auc": 0.9879,
+      "false_positive_rate": 0.0128
+    },
+    "Ensemble": {
+      "accuracy": 0.9384,
+      "precision": 0.9836,
+      "recall": 0.8792,
+      "f1": 0.9285,
+      "roc_auc": 0.9921,
+      "false_positive_rate": 0.0122
+    }
+  },
+  "top_lexical_features": {
+    "susp_words": 0.20999999344348907,
+    "brand_not_in_domain": 0.0997999981045723,
+    "ends_exe_php": 0.08780000358819962,
+    "tld_len": 0.08649999648332596,
+    "risky_tld": 0.08030000329017639,
+    "host_digit_ratio": 0.05339999869465828,
+    "is_ip": 0.04529999941587448,
+    "n_host_hyphens": 0.029100000858306885,
+    "n_at": 0.027400000020861626,
+    "brand_in_url": 0.024000000208616257,
+    "path_len": 0.023900000378489494,
+    "n_slash": 0.01850000023841858
+  },
+  "reputation_layer_holdout": {
+    "ensemble": {
+      "accuracy": 0.9737,
+      "precision": 0.9809,
+      "recall": 0.9663,
+      "f1": 0.9735,
+      "roc_auc": 0.9958,
+      "false_positive_rate": 0.0188
+    },
+    "ensemble+reputation": {
+      "accuracy": 0.9733,
+      "precision": 0.9826,
+      "recall": 0.9636,
+      "f1": 0.973,
+      "roc_auc": 0.9936,
+      "false_positive_rate": 0.0171
+    },
+    "holdout_urls_on_reputable_domains": 3938,
+    "of_which_labelled_malicious": 40
+  }
+}
