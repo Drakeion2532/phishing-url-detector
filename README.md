@@ -2,15 +2,40 @@
 
 [![tests](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml/badge.svg)](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml)
 
-Paste a link from an SMS, WhatsApp message or email and get a verdict with plain-language reasons. The **URL text alone** is analysed, so the suspicious site is never opened. The project ships as a REST API, a web checker and a **Chrome extension** that warns you before you click a dangerous link.
+Paste a **whole SMS, WhatsApp message or email** (or just a link) and get a verdict, the reasons in plain language, and what to do next. Links are judged from their **text alone**, so the suspicious site is never opened. The project ships as a REST API, a web checker, a command-line tool and a **Chrome extension** that warns you before you click a dangerous link.
 
-| Phishing link | Legitimate site |
+| Scam SMS (no link, just a phone number) | Genuine delivery SMS |
 |---|---|
 | ![](docs/checker_phishing.png) | ![](docs/checker_safe.png) |
 
 ## The problem
 
 "Your SBI KYC is expiring, update now: sbi-kyc-update.xyz/login". Links like this arrive by SMS and WhatsApp every day. They spread on WhatsApp and SMS, where there's no email security gateway to filter them. People need a fast, private check that **explains why** a link is dangerous, so they learn to spot the next one themselves.
+
+## Checking a whole message
+
+Real users don't receive bare URLs, and many Indian scams contain **no link at all**: "your electricity will be cut tonight, call officer 98xxxxxxxx", or "share the OTP to keep your account active". So the message checker does three things:
+
+1. **Finds every link** in the text, including bare domains such as `sbi-kyc-update.xyz/login` (how most smishing links are written), while ignoring amounts (`Rs.2,500.00`), times (`9.30 pm`) and e-mail addresses.
+2. **Scores each link** with the URL model below.
+3. **Looks for scam patterns in the wording**, in English and common Hinglish:
+   - a request for an OTP, PIN or CVV (only a real request: "do not share your OTP" doesn't count)
+   - urgency
+   - threats that an account or service will be blocked
+   - KYC, PAN or Aadhaar "updates"
+   - prize or refund bait
+   - payment requests
+   - being told to call a **personal mobile number** instead of a toll-free helpline
+
+The verdict comes with advice, including where to report the message in India: **Chakshu on [sancharsaathi.gov.in](https://sancharsaathi.gov.in)**, or the national cyber-fraud helpline **1930**.
+
+```bash
+python -m phishguard.message "Dear user your electricity will be disconnected tonight. Call officer 9876543210 immediately"
+curl -X POST localhost:8003/check_message -H 'content-type: application/json' \
+     -d '{"text":"Your SBI account will be blocked today. Update PAN at sbi-kyc-update.xyz/login"}'
+```
+
+The message rules are hand-written and were checked on a small set of realistic genuine and scam messages (see `tests/test_phishguard.py`), not on a labelled benchmark. A genuine message can still be flagged if it uses scam-like wording, and links on platforms where anyone can publish (Google Docs, Blogspot, URL shorteners) are deliberately rated "suspicious" rather than "safe", because phishers use them.
 
 ## How it works
 
@@ -59,6 +84,7 @@ python -m phishguard.eval_reputation  # effect of the reputation layer
 pytest -q
 
 uvicorn phishguard.api:app --port 8003   # web checker at http://127.0.0.1:8003
+python -m phishguard.message "paste a whole SMS here"
 curl -X POST localhost:8003/check -H 'content-type: application/json' \
      -d '{"url":"paypal.com.account-verify.tk/signin"}'
 ```
@@ -88,9 +114,10 @@ URLs are normalised (scheme and `www.` stripped) before training, so the model c
 ```
 phishguard/
   features.py         37 lexical features + explanations
+  message.py          link extraction + scam-wording flags for whole messages
   reputation.py       top-10k reputation layer (excludes shared hosting)
   train.py            models, hold-out + cross-source evaluation
   eval_reputation.py
-  api.py              FastAPI + web UI
+  api.py              FastAPI: /check (one URL), /check_message (whole message), web UI
 extension/            Chrome MV3 extension (link-click guard)
 ```

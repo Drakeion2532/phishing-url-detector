@@ -1,21 +1,35 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PhishGuard URL Checker</title><style>
+<title>PhishGuard Message Checker</title><style>
 body{font-family:system-ui,sans-serif;background:#0b1220;color:#e5e7eb;margin:0;display:flex;justify-content:center}
-.wrap{max-width:720px;width:100%;padding:48px 16px}h1{margin:0 0 6px}p.s{color:#9ca3af;margin-top:0}
-form{display:flex;gap:8px;margin:24px 0}input{flex:1;padding:14px;border-radius:10px;border:1px solid #374151;background:#111827;color:#fff;font-size:16px}
-button{padding:14px 20px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
-.card{background:#111827;border-radius:14px;padding:20px;border-left:8px solid #6b7280}.safe{border-color:#22c55e}.suspicious{border-color:#f59e0b}.phishing{border-color:#ef4444}
-.v{font-size:28px;font-weight:800;text-transform:uppercase}.meter{height:10px;background:#1f2937;border-radius:6px;margin:12px 0}.meter div{height:100%;border-radius:6px}
-li{margin:6px 0;color:#d1d5db}.ex{color:#93c5fd;cursor:pointer;text-decoration:underline;margin-right:10px;font-size:14px}
-</style></head><body><div class="wrap"><h1>🛡️ PhishGuard</h1><p class="s">Paste a link from an SMS, WhatsApp or email. We analyse the URL text only and never open the site.</p>
-<form id="f"><input id="u" placeholder="e.g. sbi-kyc-update.xyz/login" autocomplete="off"><button>Check</button></form>
-<div><span class="ex">paypal.com.account-verify.tk/signin</span><span class="ex">github.com/explore</span><span class="ex">bit.ly/3xYz12</span></div><br>
+.wrap{max-width:720px;width:100%;padding:48px 16px;box-sizing:border-box}h1{margin:0 0 6px}p.s{color:#9ca3af;margin-top:0}
+form{display:flex;flex-direction:column;gap:8px;margin:24px 0}
+textarea{min-height:110px;padding:14px;border-radius:10px;border:1px solid #374151;background:#111827;color:#fff;font:16px system-ui,sans-serif;resize:vertical}
+button{align-self:flex-end;padding:12px 22px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+.card{background:#111827;border-radius:14px;padding:20px;border-left:8px solid #6b7280;margin-bottom:12px}.safe{border-color:#22c55e}.suspicious{border-color:#f59e0b}.phishing{border-color:#ef4444}
+.v{font-size:28px;font-weight:800;text-transform:uppercase}.advice{margin-top:8px;color:#e5e7eb}
+.link{background:#0b1220;border-radius:10px;padding:12px;margin-top:10px}.link b{word-break:break-all}
+li{margin:6px 0;color:#d1d5db}.ex{display:block;color:#93c5fd;cursor:pointer;text-decoration:underline;margin:6px 0;font-size:14px}
+h3{margin:16px 0 4px;font-size:15px;color:#9ca3af}
+</style></head><body><div class="wrap"><h1>🛡️ PhishGuard</h1>
+<p class="s">Paste a whole SMS, WhatsApp message or email, or just a link. Links are judged from their text only; no site is ever opened.</p>
+<form id="f"><textarea id="t" placeholder="e.g. Dear customer, your SBI KYC expires today. Update at sbi-kyc-update.xyz/login"></textarea><button>Check</button></form>
+<div><b>Try:</b>
+<span class="ex">Dear Customer, your SBI YONO account will be blocked today. Update your PAN immediately at sbi-kyc-update.xyz/login</span>
+<span class="ex">Dear user your electricity will be disconnected tonight at 9.30 pm. Call officer 9876543210 immediately</span>
+<span class="ex">Your Amazon order #405-1234567 has shipped. Track at amazon.in/your-orders</span></div><br>
 <div id="out"></div></div><script>
 const out=document.getElementById('out');
-async function run(url){const r=await fetch('/check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url})});const d=await r.json();
- const col={safe:'#22c55e',suspicious:'#f59e0b',phishing:'#ef4444'}[d.verdict];
- out.innerHTML=`<div class="card ${d.verdict}"><div class="v" style="color:${col}">${d.verdict}</div><div>risk score ${(d.score*100).toFixed(1)}%</div>
- <div class="meter"><div style="width:${d.score*100}%;background:${col}"></div></div><ul>${(d.reasons||[]).map(x=>'<li>'+x.replace(/</g,'&lt;')+'</li>').join('')||'<li>No specific red flags in the URL text</li>'}</ul></div>`;}
-document.getElementById('f').onsubmit=e=>{e.preventDefault();run(document.getElementById('u').value)};
-document.querySelectorAll('.ex').forEach(x=>x.onclick=()=>{document.getElementById('u').value=x.textContent;run(x.textContent)});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COL={safe:'#22c55e',suspicious:'#f59e0b',phishing:'#ef4444'};
+async function run(text){
+ const r=await fetch('/check_message',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text})});
+ if(!r.ok){out.innerHTML='<div class="card">Please paste a message or link (up to 5,000 characters).</div>';return}
+ const d=await r.json();
+ const links=d.links.map(l=>`<div class="link"><span style="color:${COL[l.verdict]};font-weight:700">${esc(l.verdict.toUpperCase())}</span> · <b>${esc(l.url)}</b> · risk ${(l.score*100).toFixed(0)}%<ul>${l.reasons.map(x=>'<li>'+esc(x)+'</li>').join('')||'<li>No red flags in the link text</li>'}</ul></div>`).join('');
+ const flags=d.message_flags.map(f=>'<li>'+esc(f.why)+'</li>').join('');
+ out.innerHTML=`<div class="card ${esc(d.verdict)}"><div class="v" style="color:${COL[d.verdict]}">${esc(d.verdict)}</div><div class="advice">${esc(d.advice)}</div>
+ ${flags?'<h3>Red flags in the message</h3><ul>'+flags+'</ul>':''}
+ <h3>${d.links.length?'Links found ('+d.links.length+')':'No links found'}</h3>${links}</div>`;}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();run(document.getElementById('t').value)};
+document.querySelectorAll('.ex').forEach(x=>x.onclick=()=>{document.getElementById('t').value=x.textContent.trim();run(x.textContent.trim())});
 </script></body></html>
