@@ -1,4 +1,4 @@
-# PhishGuard: Phishing & Malicious URL Detector
+# PhishGuard: Phishing & Scam Message Detector
 
 [![tests](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml/badge.svg)](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml)
 
