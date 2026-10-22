@@ -1,5 +1,7 @@
 # PhishGuard: Phishing & Malicious URL Detector
 
+[![tests](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml/badge.svg)](https://github.com/Drakeion2532/phishing-url-detector/actions/workflows/tests.yml)
+
 Paste a link from an SMS, WhatsApp message or email and get a verdict with plain-language reasons. The **URL text alone** is analysed, so the suspicious site is never opened. The project ships as a REST API, a web checker and a **Chrome extension** that warns you before you click a dangerous link.
 
 | Phishing link | Legitimate site |
@@ -8,7 +10,7 @@ Paste a link from an SMS, WhatsApp message or email and get a verdict with plain
 
 ## The problem
 
-"Your SBI KYC is expiring, update now: sbi-kyc-update.xyz/login". India sees millions of these smishing and phishing links a year. They spread on WhatsApp and SMS, where there's no email security gateway to filter them. People need a fast, private check that **explains why** a link is dangerous, so they learn to spot the next one themselves.
+"Your SBI KYC is expiring, update now: sbi-kyc-update.xyz/login". Links like this arrive by SMS and WhatsApp every day. They spread on WhatsApp and SMS, where there's no email security gateway to filter them. People need a fast, private check that **explains why** a link is dangerous, so they learn to spot the next one themselves.
 
 ## How it works
 
