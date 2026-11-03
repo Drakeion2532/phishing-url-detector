@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Shubhan Punde · https://github.com/Drakeion2532/phishing-url-detector · MIT licence · sp2532-fc172ce9ff51
 // Before a link is followed, ask PhishGuard. Phishing -> block + explain; suspicious -> confirm.
 document.addEventListener("click", (ev) => {
   const a = ev.target.closest && ev.target.closest("a[href]");

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Shubhan Punde · https://github.com/Drakeion2532/phishing-url-detector · MIT licence · sp2532-fc172ce9ff51
 """Check a whole SMS / WhatsApp / email message, not just one URL.
 
 People don't receive bare URLs: they get "Dear customer, your SBI KYC expires today, update at

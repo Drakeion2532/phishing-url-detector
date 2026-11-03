@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Shubhan Punde · https://github.com/Drakeion2532/phishing-url-detector · MIT licence · sp2532-fc172ce9ff51
 // Calls the PhishGuard API and caches verdicts for 10 minutes.
 const API = "http://127.0.0.1:8003/check";
 const cache = new Map();

@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Shubhan Punde · https://github.com/Drakeion2532/phishing-url-detector · MIT licence · sp2532-fc172ce9ff51
 """Domain-reputation layer: the ML model judges the URL *text*, but a URL on
 a top-10k registered domain (e.g. login.microsoftonline.com) is legitimate no
 matter how 'phishy' its words look. Shared-hosting / shortener domains are
