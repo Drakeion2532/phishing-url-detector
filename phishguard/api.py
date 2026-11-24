@@ -24,8 +24,11 @@ from .integrity import load_verified
 ROOT = Path(__file__).resolve().parents[1]
 model = load_verified(ROOT / "models" / "phishguard.joblib")
 app = FastAPI(title="PhishGuard")
-# the browser extension calls the API from any page
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["POST", "GET"], allow_headers=["*"])
+# Only the PhishGuard extension (its background worker) and local pages may call the API from a browser.
+# A wildcard would let any website use this local service, e.g. to probe which URLs a user is checking.
+ALLOWED_ORIGINS = r"^(chrome-extension://[a-p]{32}|http://(127\.0\.0\.1|localhost)(:\d+)?)$"
+app.add_middleware(CORSMiddleware, allow_origin_regex=ALLOWED_ORIGINS, allow_methods=["POST", "GET"],
+                   allow_headers=["content-type"])
 
 class Req(BaseModel):
     url: str = Field(min_length=3, max_length=2048)

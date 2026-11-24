@@ -128,7 +128,7 @@ The bundled model is a `joblib` (pickle) file, and unpickling a tampered file ca
 So the API loads it through [`phishguard/integrity.py`](phishguard/integrity.py): its SHA-256 is pinned
 in `models/phishguard.joblib.sha256` at training time, and the API refuses to start if the file does not
 match. Tests check that a flipped byte or a missing pin is rejected, and that oversized or empty input is
-refused with HTTP 422. To rebuild the model from source, run `python -m phishguard.train`.
+refused with HTTP 422. Browser access is limited to the PhishGuard extension and localhost (no wildcard CORS), so other websites cannot use the local API. To rebuild the model from source, run `python -m phishguard.train`.
 
 ## Security checks
 

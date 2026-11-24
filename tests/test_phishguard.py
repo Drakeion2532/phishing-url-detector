@@ -72,3 +72,17 @@ def test_api_rejects_oversized_or_empty_input():
     assert c.post("/check", json={"url": "a" * 3000}).status_code == 422
     assert c.post("/check", json={"url": ""}).status_code == 422
     assert c.post("/check_message", json={"text": "x" * 6000}).status_code == 422
+
+
+def test_cors_allows_only_the_extension_and_localhost():
+    from fastapi.testclient import TestClient
+    from phishguard.api import app
+    c = TestClient(app)
+    def acao(origin):
+        r = c.options("/check", headers={"Origin": origin, "Access-Control-Request-Method": "POST",
+                                         "Access-Control-Request-Headers": "content-type"})
+        return r.headers.get("access-control-allow-origin")
+    ext = "chrome-extension://" + "a" * 32
+    assert acao(ext) == ext
+    assert acao("http://127.0.0.1:8003") == "http://127.0.0.1:8003"
+    assert acao("https://evil.example") is None
