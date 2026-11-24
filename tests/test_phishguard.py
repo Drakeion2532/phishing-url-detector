@@ -63,3 +63,12 @@ def test_message_verdicts():
     assert verdict("Your electricity will be disconnected tonight. Call officer 9876543210 immediately") == "phishing"
     r = c.post("/check_message", json={"text": "Pay customs fee at indiapost-redeliver.top/pay"}).json()
     assert r["verdict"] == "phishing" and r["links"][0]["url"] == "indiapost-redeliver.top/pay" and r["advice"]
+
+
+def test_api_rejects_oversized_or_empty_input():
+    from fastapi.testclient import TestClient
+    from phishguard.api import app
+    c = TestClient(app)
+    assert c.post("/check", json={"url": "a" * 3000}).status_code == 422
+    assert c.post("/check", json={"url": ""}).status_code == 422
+    assert c.post("/check_message", json={"text": "x" * 6000}).status_code == 422

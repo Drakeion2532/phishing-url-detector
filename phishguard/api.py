@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import joblib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -20,9 +19,10 @@ from .features import url_features, normalise, EXPLAIN, FREE_HOSTING, SHORTENERS
 from .train import predict
 from .reputation import reputation_safe, registered_domain
 from .message import check_message
+from .integrity import load_verified
 
 ROOT = Path(__file__).resolve().parents[1]
-model = joblib.load(ROOT / "models" / "phishguard.joblib")
+model = load_verified(ROOT / "models" / "phishguard.joblib")
 app = FastAPI(title="PhishGuard")
 # the browser extension calls the API from any page
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["POST", "GET"], allow_headers=["*"])

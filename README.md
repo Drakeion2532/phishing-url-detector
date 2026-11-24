@@ -122,9 +122,17 @@ phishguard/
 extension/            Chrome MV3 extension (link-click guard)
 ```
 
-## Model file safety
+## Model integrity
 
-The bundled model is a `joblib` (pickle) file so the API runs out of the box. Unpickling can run code, so only load model files you trust. To rebuild it from source instead, run `python -m phishguard.train`.
+The bundled model is a `joblib` (pickle) file, and unpickling a tampered file can run arbitrary code.
+So the API loads it through [`phishguard/integrity.py`](phishguard/integrity.py): its SHA-256 is pinned
+in `models/phishguard.joblib.sha256` at training time, and the API refuses to start if the file does not
+match. Tests check that a flipped byte or a missing pin is rejected, and that oversized or empty input is
+refused with HTTP 422. To rebuild the model from source, run `python -m phishguard.train`.
+
+## Security checks
+
+CI runs `bandit` and `pip-audit` on every push and weekly; see [SECURITY.md](SECURITY.md).
 
 ## How this was built
 

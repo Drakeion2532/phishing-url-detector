@@ -26,6 +26,7 @@ from sklearn.metrics import (accuracy_score, f1_score, precision_score, recall_s
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
+from .integrity import pin
 from .features import feature_matrix, normalise
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +91,7 @@ def main():
 
     final = fit(d["url"].tolist(), d["label"].values)      # production model on all data
     joblib.dump(final, ROOT / "models" / "phishguard.joblib", compress=3)
+    pin(ROOT / "models" / "phishguard.joblib")      # integrity pin checked by every load
     print("saved model")
 
 
