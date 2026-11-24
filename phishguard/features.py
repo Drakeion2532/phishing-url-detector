@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Shubhan Punde · https://github.com/Drakeion2532/phishing-url-detector · MIT licence · sp2532-fc172ce9ff51
+# Copyright (c) 2026 Shubhan Punde · MIT licence
 """Lexical URL features – computed from the URL string only, so a verdict
 needs no network request (safe: we never visit the suspicious site)."""
 from __future__ import annotations

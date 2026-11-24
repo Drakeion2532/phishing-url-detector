@@ -122,8 +122,14 @@ phishguard/
 extension/            Chrome MV3 extension (link-click guard)
 ```
 
-## Licence and credit
+## Model file safety
 
-MIT © 2026 [Shubhan Punde](https://github.com/Drakeion2532). You're welcome to learn from and reuse this code; the licence requires keeping the copyright notice, and presenting the project as your own work is not permitted. To cite it, use [CITATION.cff](CITATION.cff).
+The bundled model is a `joblib` (pickle) file so the API runs out of the box. Unpickling can run code, so only load model files you trust. To rebuild it from source instead, run `python -m phishguard.train`.
 
-<sub>Project ID: sp2532-fc172ce9ff51</sub>
+## How this was built
+
+I designed the detection logic, threat model and evaluation, and used AI pair-programming (Claude Code) for implementation. Every number in this README was re-run and checked, and the test suite reproduces the key results.
+
+## Licence
+
+MIT © 2026 [Shubhan Punde](https://github.com/Drakeion2532). See [LICENSE](LICENSE). To cite this project, use [CITATION.cff](CITATION.cff).
